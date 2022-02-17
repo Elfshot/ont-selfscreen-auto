@@ -52,6 +52,7 @@ class Main {
   }
 
   private async navigate() {
+    await this.page.emulate(puppeteer.devices[this.emulatedDevice]);
     await this.page.goto('https://covid-19.ontario.ca/school-screening/');
     
     for (const selectorArr of this.selectors) {
@@ -62,7 +63,6 @@ class Main {
       await sleep(250);
     }
     
-    await this.page.emulate(puppeteer.devices[this.emulatedDevice]);
     await this.page.$eval(this.focusSelector, e => {
       e.scrollIntoView({ block: 'end', inline: 'end' });
     });
@@ -87,7 +87,7 @@ class Main {
       
       } catch(e) {
         console.error(e);
-        await sleep(10000); continue;
+        await sleep(5 * 60 * 1000); continue;
       }
     }
   }
@@ -101,12 +101,25 @@ class Main {
       headers: form.getHeaders(),
     };
 
-    fetch(this.webhookURL, postData);
+    for (let i = 0; i < 10; i++) {
+      try {
+        await fetch(this.webhookURL, postData);
+        break;
+      } catch(e) {
+        console.error('Failed to post\n' + e)
+        continue;
+      }
+    }
     console.log('Message Sent');
   }
 
   public async run() {
-    scheduleJob('COVID-Runner', '10 8 * * *', async () => {
+    scheduleJob('COVID-Runner', {
+      tz: 'America/Toronto',
+      hour: [8, 12],
+      minute: [0, 10],
+    }, async () => {
+      console.log('Running job');
       await this.distribute(await this.getImage());
       process.exit(0);
     });
