@@ -16,14 +16,14 @@ class Main {
 
   private webhookURL = process.env.WEBHOOK;
   private selectors = [
-    ['.button__StyledButton-sc-1hmy6jw-0'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(2)'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)'],
-    ['#none_of_the_above', '.button__StyledButton-sc-1hmy6jw-0'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)'],
-    ['button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)'],
+    '.button__StyledButton-sc-1hmy6jw-0',
+    'button.button__StyledButton-sc-1hmy6jw-0:nth-child(2)',
+    'button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)',
+    'div.ontario-checkboxes__item:nth-child(11) > label:nth-child(2)',
+    '.button__StyledButton-sc-1hmy6jw-0',
+    'button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)',
+    'button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)',
+    'button.button__StyledButton-sc-1hmy6jw-0:nth-child(1)',
   ];
 
   private focusSelector = 'div.approved-template__HyperlinkButton-sc-1edfyoq-8:nth-child(4)';
@@ -55,18 +55,14 @@ class Main {
     await this.page.emulate(puppeteer.devices[this.emulatedDevice]);
     await this.page.goto('https://covid-19.ontario.ca/school-screening/');
     
-    for (const selectorArr of this.selectors) {
-      for (const selector of selectorArr) {
-        await this.page.click(selector);
-        if (selectorArr[selectorArr.indexOf(selector) + 1]) await sleep(100);
-      }
-      await sleep(250);
+    for (const selector of this.selectors) {
+      await Promise.all([this.page.click(selector), sleep(500)]);
     }
     
     await this.page.$eval(this.focusSelector, e => {
       e.scrollIntoView({ block: 'end', inline: 'end' });
     });
-    //console.log('Page navigated');
+    console.log('Page navigated');
   }
 
   private async capture() {
