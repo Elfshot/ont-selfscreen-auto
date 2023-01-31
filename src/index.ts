@@ -15,6 +15,8 @@ class Main {
   private page: Page;
 
   private webhookURL = process.env.WEBHOOK;
+  private timezone = process.env.TIMEZONE;
+
   private selectors = [
     '.button__StyledButton-sc-1hmy6jw-0',
     'button.button__StyledButton-sc-1hmy6jw-0:nth-child(2)',
@@ -37,7 +39,7 @@ class Main {
           args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--no-first-run', '--no-zygote', ''],
           //product: 'firefox',
           env: {
-            TZ: 'America/Toronto'
+            TZ: this.timezone
           }
         });
 
